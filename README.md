@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="./apcore-a2a-logo.svg" alt="apcore logo" width="200"/>
+</div>
+
 # apcore-a2a
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
