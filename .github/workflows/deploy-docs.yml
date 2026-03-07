@@ -1,0 +1,59 @@
+name: Deploy Documentation
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - run: pip install mkdocs-material
+
+      - name: Prepare docs for MkDocs
+        run: |
+          # Copy root-level docs into docs/
+          cp README.md docs/index.md
+          cp CHANGELOG.md docs/changelog.md
+
+          # Copy logo into docs assets
+          mkdir -p docs/assets
+          cp apcore-a2a-logo.svg docs/assets/
+
+          # Fix logo path in index.md
+          sed -i 's|\./apcore-a2a-logo\.svg|./assets/apcore-a2a-logo.svg|g' docs/index.md
+
+          # Fix doc links in index.md: docs/X → X
+          sed -i 's|(docs/|(|g' docs/index.md
+
+      - run: mkdocs build
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

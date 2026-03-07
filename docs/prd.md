@@ -17,8 +17,6 @@
 
 apcore-a2a originated from the observation that apcore modules already carry all the metadata the A2A (Agent-to-Agent) protocol needs -- `input_schema`, `output_schema`, `description`, `annotations`, `tags`, and `examples` -- yet there is no standard way to expose them to A2A clients, orchestrators, or peer agents. The idea was validated through analysis of the A2A protocol specification (v0.3.0), competitive landscape assessment (LangChain and CrewAI shipping A2A integrations), and demand signals (A2A adopted by 50+ partners including Google, Salesforce, SAP, ServiceNow; moved to Linux Foundation governance in April 2025). The core insight: since the mapping from apcore metadata to A2A concepts (Agent Card, Skills, Task lifecycle) is nearly 1:1, a single adapter package can eliminate all manual A2A server construction work for the entire apcore ecosystem. This is the natural counterpart to apcore-mcp: MCP handles model-to-tool communication; A2A handles agent-to-agent communication. Together they make apcore the only schema-driven framework that natively bridges to both major AI interoperability protocols from a single module definition. This PRD formalizes the validated idea into actionable requirements.
 
-> For the original brainstorming and validation notes, see [`ideas/apcore-a2a.md`](../../ideas/apcore-a2a.md).
-
 ---
 
 ## 1. Executive Summary

@@ -1,0 +1,59 @@
+site_name: apcore-a2a
+site_description: Automatic A2A protocol adapter for the apcore ecosystem
+repo_url: https://github.com/aipartnerup/apcore-a2a
+repo_name: aipartnerup/apcore-a2a
+
+theme:
+  name: material
+  logo: assets/apcore-a2a-logo.svg
+  favicon: assets/apcore-a2a-logo.svg
+  palette:
+    - scheme: default
+      primary: deep purple
+      accent: purple
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: deep purple
+      accent: purple
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.sections
+    - navigation.expand
+    - content.code.copy
+
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - Changelog: changelog.md
+  - Specifications:
+      - Product Requirements (PRD): prd.md
+      - Technical Design: tech-design.md
+      - Software Requirements (SRS): srs.md
+      - Test Plan: test-plan.md
+  - Features:
+      - Overview: features/overview.md
+      - Adapters: features/adapters.md
+      - Storage: features/storage.md
+      - Server Core: features/server-core.md
+      - Streaming: features/streaming.md
+      - Push Notifications: features/push-notifications.md
+      - Auth: features/auth.md
+      - Client: features/client.md
+      - Public API: features/public-api.md
+      - CLI: features/cli.md
+      - Explorer: features/explorer.md
+      - Ops: features/ops.md
+
+markdown_extensions:
+  - tables
+  - admonition
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - toc:
+      permalink: true
