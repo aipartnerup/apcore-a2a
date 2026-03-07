@@ -12,61 +12,70 @@ You need an existing apcore project with at least one module defined:
 
 ## Installation
 
-### Python
+=== "Python"
 
-```bash
-pip install apcore-a2a
-```
+    ```bash
+    pip install apcore-a2a
+    ```
 
-Requires Python 3.10+ and `apcore-python` 0.6.0+.
+    Requires Python 3.10+ and `apcore-python` 0.6.0+.
 
-### TypeScript
+=== "TypeScript"
 
-```bash
-npm install apcore-a2a
-# or
-pnpm add apcore-a2a
-```
+    ```bash
+    npm install apcore-a2a
+    # or
+    pnpm add apcore-a2a
+    ```
 
-Requires Node.js 18+ and `apcore-js` 0.8.0+.
+    Requires Node.js 18+ and `apcore-js` 0.8.0+.
 
 ---
 
 ## Step 1: Serve Your Modules as an A2A Agent
 
-### Python
+=== "Python"
 
-```python
-from apcore import Registry
-from apcore_a2a import serve
+    ```python
+    from apcore import Registry
+    from apcore_a2a import serve
 
-# 1. Set up your registry
-registry = Registry(extensions_dir="./extensions")
-registry.discover()
+    # 1. Set up your registry
+    registry = Registry(extensions_dir="./extensions")
+    registry.discover()
 
-# 2. Launch the A2A server (blocks until shutdown)
-serve(registry, name="My Agent", port=8000)
-```
+    # 2. Launch the A2A server (blocks until shutdown)
+    serve(registry, name="My Agent", port=8000)
+    ```
 
-### TypeScript
+=== "TypeScript"
 
-```typescript
-import { Registry } from "apcore-js";
-import { serve } from "apcore-a2a";
+    ```typescript
+    import { Registry } from "apcore-js";
+    import { serve } from "apcore-a2a";
 
-const registry = new Registry({ extensionsDir: "./extensions" });
-await registry.discover();
+    const registry = new Registry({ extensionsDir: "./extensions" });
+    await registry.discover();
 
-serve(registry, {
-  name: "My Agent",
-  port: 8000,
-});
-```
+    serve(registry, {
+      name: "My Agent",
+      port: 8000,
+    });
+    ```
 
 Your agent is now running. Verify by visiting:
 
-- Python: `http://localhost:8000/.well-known/agent.json`
-- TypeScript: `http://localhost:8000/.well-known/agent-card.json`
+=== "Python"
+
+    ```
+    http://localhost:8000/.well-known/agent.json
+    ```
+
+=== "TypeScript"
+
+    ```
+    http://localhost:8000/.well-known/agent-card.json
+    ```
 
 This returns the auto-generated **Agent Card** — a JSON document describing your agent's name, skills, and capabilities, all derived from your apcore module metadata.
 
@@ -76,40 +85,40 @@ This returns the auto-generated **Agent Card** — a JSON document describing yo
 
 If you don't have existing modules, here's the fastest way to create one:
 
-### Python
+=== "Python"
 
-```python
-import apcore
-from apcore_a2a import serve
+    ```python
+    import apcore
+    from apcore_a2a import serve
 
-@apcore.module(id="greeting.hello", description="Say hello to someone")
-def hello(name: str) -> str:
-    return f"Hello, {name}! Welcome to the A2A world."
+    @apcore.module(id="greeting.hello", description="Say hello to someone")
+    def hello(name: str) -> str:
+        return f"Hello, {name}! Welcome to the A2A world."
 
-# apcore auto-registers the module in the global registry
-serve(apcore.registry, name="Greeter Agent", port=8000)
-```
+    # apcore auto-registers the module in the global registry
+    serve(apcore.registry, name="Greeter Agent", port=8000)
+    ```
 
-### TypeScript
+=== "TypeScript"
 
-```typescript
-import { Type } from "@sinclair/typebox";
-import { FunctionModule, Registry } from "apcore-js";
-import { serve } from "apcore-a2a";
+    ```typescript
+    import { Type } from "@sinclair/typebox";
+    import { FunctionModule, Registry } from "apcore-js";
+    import { serve } from "apcore-a2a";
 
-const hello = new FunctionModule({
-  moduleId: "greeting.hello",
-  description: "Say hello to someone",
-  inputSchema: Type.Object({ name: Type.String() }),
-  outputSchema: Type.Object({ result: Type.String() }),
-  execute: async (inputs) => ({ result: `Hello, ${inputs.name}! Welcome to the A2A world.` }),
-});
+    const hello = new FunctionModule({
+      moduleId: "greeting.hello",
+      description: "Say hello to someone",
+      inputSchema: Type.Object({ name: Type.String() }),
+      outputSchema: Type.Object({ result: Type.String() }),
+      execute: async (inputs) => ({ result: `Hello, ${inputs.name}! Welcome to the A2A world.` }),
+    });
 
-const registry = new Registry();
-registry.register(hello);
+    const registry = new Registry();
+    registry.register(hello);
 
-serve(registry, { name: "Greeter Agent", port: 8000 });
-```
+    serve(registry, { name: "Greeter Agent", port: 8000 });
+    ```
 
 ---
 
@@ -117,50 +126,50 @@ serve(registry, { name: "Greeter Agent", port: 8000 });
 
 Use `A2AClient` to discover and invoke any A2A-compliant agent.
 
-### Python
+=== "Python"
 
-```python
-import asyncio
-from apcore_a2a import A2AClient
+    ```python
+    import asyncio
+    from apcore_a2a import A2AClient
 
-async def main():
-    async with A2AClient("http://localhost:8000") as client:
-        # Discover the agent
-        card = await client.discover()
-        print(f"Agent: {card['name']}, Skills: {len(card['skills'])}")
+    async def main():
+        async with A2AClient("http://localhost:8000") as client:
+            # Discover the agent
+            card = await client.discover()
+            print(f"Agent: {card['name']}, Skills: {len(card['skills'])}")
 
-        # Send a message
-        task = await client.send_message(
-            {"role": "user", "parts": [{"type": "text", "text": "Hello from Python!"}]},
-            metadata={"skillId": "greeting.hello"},
-        )
-        print(f"Result: {task['status']['state']}")
+            # Send a message
+            task = await client.send_message(
+                {"role": "user", "parts": [{"type": "text", "text": "Hello from Python!"}]},
+                metadata={"skillId": "greeting.hello"},
+            )
+            print(f"Result: {task['status']['state']}")
 
-asyncio.run(main())
-```
+    asyncio.run(main())
+    ```
 
-### TypeScript
+=== "TypeScript"
 
-```typescript
-import { A2AClient } from "apcore-a2a";
+    ```typescript
+    import { A2AClient } from "apcore-a2a";
 
-const client = new A2AClient("http://localhost:8000");
+    const client = new A2AClient("http://localhost:8000");
 
-// Discover the agent
-const card = await client.discover();
-const skills = card["skills"] as unknown[];
-console.log(`Agent: ${card["name"]}, Skills: ${skills.length}`);
+    // Discover the agent
+    const card = await client.discover();
+    const skills = card["skills"] as unknown[];
+    console.log(`Agent: ${card["name"]}, Skills: ${skills.length}`);
 
-// Send a message
-const task = await client.sendMessage(
-  { role: "user", parts: [{ type: "text", text: "Hello from TypeScript!" }] },
-  { metadata: { skillId: "greeting.hello" } },
-);
-const status = task["status"] as Record<string, unknown>;
-console.log(`Result: ${status["state"]}`);
+    // Send a message
+    const task = await client.sendMessage(
+      { role: "user", parts: [{ type: "text", text: "Hello from TypeScript!" }] },
+      { metadata: { skillId: "greeting.hello" } },
+    );
+    const status = task["status"] as Record<string, unknown>;
+    console.log(`Result: ${status["state"]}`);
 
-client.close();
-```
+    client.close();
+    ```
 
 ---
 
@@ -168,41 +177,41 @@ client.close();
 
 For long-running tasks, use SSE streaming to receive real-time updates.
 
-### Python
+=== "Python"
 
-```python
-from apcore_a2a import A2AClient
+    ```python
+    from apcore_a2a import A2AClient
 
-async with A2AClient("http://localhost:8000") as client:
-    async for event in client.stream_message(
-        {"role": "user", "parts": [{"type": "text", "text": "Process this data"}]},
-        metadata={"skillId": "data.process"},
-    ):
-        if "status" in event:
-            print(f"Status: {event['status']['state']}")
-        if "artifact" in event:
-            print(f"Artifact: {event['artifact']}")
-```
+    async with A2AClient("http://localhost:8000") as client:
+        async for event in client.stream_message(
+            {"role": "user", "parts": [{"type": "text", "text": "Process this data"}]},
+            metadata={"skillId": "data.process"},
+        ):
+            if "status" in event:
+                print(f"Status: {event['status']['state']}")
+            if "artifact" in event:
+                print(f"Artifact: {event['artifact']}")
+    ```
 
-### TypeScript
+=== "TypeScript"
 
-```typescript
-import { A2AClient } from "apcore-a2a";
+    ```typescript
+    import { A2AClient } from "apcore-a2a";
 
-const client = new A2AClient("http://localhost:8000");
+    const client = new A2AClient("http://localhost:8000");
 
-for await (const event of client.streamMessage(
-  { role: "user", parts: [{ type: "text", text: "Process this data" }] },
-  { metadata: { skillId: "data.process" } },
-)) {
-  if (event.status) {
-    console.log(`Status: ${event.status.state}`);
-  }
-  if (event.artifact) {
-    console.log(`Artifact:`, event.artifact);
-  }
-}
-```
+    for await (const event of client.streamMessage(
+      { role: "user", parts: [{ type: "text", text: "Process this data" }] },
+      { metadata: { skillId: "data.process" } },
+    )) {
+      if (event.status) {
+        console.log(`Status: ${event.status.state}`);
+      }
+      if (event.artifact) {
+        console.log(`Artifact:`, event.artifact);
+      }
+    }
+    ```
 
 ---
 
@@ -210,55 +219,55 @@ for await (const event of client.streamMessage(
 
 Protect your agent with JWT/Bearer authentication.
 
-### Python
+=== "Python"
 
-```python
-import os
-from apcore import Registry
-from apcore_a2a import serve
-from apcore_a2a.auth import JWTAuthenticator
+    ```python
+    import os
+    from apcore import Registry
+    from apcore_a2a import serve
+    from apcore_a2a.auth import JWTAuthenticator
 
-registry = Registry(extensions_dir="./extensions")
-registry.discover()
+    registry = Registry(extensions_dir="./extensions")
+    registry.discover()
 
-auth = JWTAuthenticator(key=os.environ["JWT_SECRET"])
+    auth = JWTAuthenticator(key=os.environ["JWT_SECRET"])
 
-serve(
-    registry,
-    name="Secure Agent",
-    auth=auth,
-    port=8000,
-)
-```
+    serve(
+        registry,
+        name="Secure Agent",
+        auth=auth,
+        port=8000,
+    )
+    ```
 
-Clients include the token in the `A2AClient` constructor:
+    Clients include the token in the `A2AClient` constructor:
 
-```python
-async with A2AClient("http://localhost:8000", auth="Bearer eyJ...") as client:
-    task = await client.send_message(...)
-```
+    ```python
+    async with A2AClient("http://localhost:8000", auth="Bearer eyJ...") as client:
+        task = await client.send_message(...)
+    ```
 
-### TypeScript
+=== "TypeScript"
 
-```typescript
-import { serve, JWTAuthenticator } from "apcore-a2a";
+    ```typescript
+    import { serve, JWTAuthenticator } from "apcore-a2a";
 
-const auth = new JWTAuthenticator({ key: process.env.JWT_SECRET! });
+    const auth = new JWTAuthenticator({ key: process.env.JWT_SECRET! });
 
-serve(registry, {
-  name: "Secure Agent",
-  auth,
-  port: 8000,
-});
-```
+    serve(registry, {
+      name: "Secure Agent",
+      auth,
+      port: 8000,
+    });
+    ```
 
-Client side:
+    Client side:
 
-```typescript
-import { A2AClient } from "apcore-a2a";
+    ```typescript
+    import { A2AClient } from "apcore-a2a";
 
-const client = new A2AClient("http://localhost:8000", { auth: "Bearer eyJ..." });
-```
+    const client = new A2AClient("http://localhost:8000", { auth: "Bearer eyJ..." });
+    ```
 
 ---
 
@@ -266,29 +275,29 @@ const client = new A2AClient("http://localhost:8000", { auth: "Bearer eyJ..." })
 
 Launch an A2A agent directly from the command line.
 
-### Python
+=== "Python"
 
-```bash
-apcore-a2a serve --extensions-dir ./extensions --name "CLI Agent" --port 8000
-```
+    ```bash
+    apcore-a2a serve --extensions-dir ./extensions --name "CLI Agent" --port 8000
+    ```
 
-With options:
+    With options:
 
-```bash
-apcore-a2a serve \
-  --extensions-dir ./extensions \
-  --name "Production Agent" \
-  --port 8080 \
-  --explorer \
-  --push-notifications \
-  --log-level info
-```
+    ```bash
+    apcore-a2a serve \
+      --extensions-dir ./extensions \
+      --name "Production Agent" \
+      --port 8080 \
+      --explorer \
+      --push-notifications \
+      --log-level info
+    ```
 
-### TypeScript
+=== "TypeScript"
 
-```bash
-npx apcore-a2a serve --extensions-dir ./extensions --name "CLI Agent" --port 8000
-```
+    ```bash
+    npx apcore-a2a serve --extensions-dir ./extensions --name "CLI Agent" --port 8000
+    ```
 
 ---
 
@@ -296,36 +305,36 @@ npx apcore-a2a serve --extensions-dir ./extensions --name "CLI Agent" --port 800
 
 Get the underlying app object and mount it into your existing web framework.
 
-### Python (FastAPI)
+=== "Python (FastAPI)"
 
-```python
-from fastapi import FastAPI
-from apcore import Registry
-from apcore_a2a import async_serve
+    ```python
+    from fastapi import FastAPI
+    from apcore import Registry
+    from apcore_a2a import async_serve
 
-app = FastAPI()
-registry = Registry(extensions_dir="./extensions")
-registry.discover()
+    app = FastAPI()
+    registry = Registry(extensions_dir="./extensions")
+    registry.discover()
 
-@app.on_event("startup")
-async def mount_a2a():
-    a2a_app = await async_serve(registry, url="https://example.com/a2a")
-    app.mount("/a2a", a2a_app)
-```
+    @app.on_event("startup")
+    async def mount_a2a():
+        a2a_app = await async_serve(registry, url="https://example.com/a2a")
+        app.mount("/a2a", a2a_app)
+    ```
 
-### TypeScript (Express)
+=== "TypeScript (Express)"
 
-```typescript
-import express from "express";
-import { asyncServe } from "apcore-a2a";
+    ```typescript
+    import express from "express";
+    import { asyncServe } from "apcore-a2a";
 
-const outer = express();
+    const outer = express();
 
-const a2aApp = await asyncServe(registry, { url: "https://example.com/a2a" });
-outer.use("/a2a", a2aApp);
+    const a2aApp = await asyncServe(registry, { url: "https://example.com/a2a" });
+    outer.use("/a2a", a2aApp);
 
-outer.listen(8000);
-```
+    outer.listen(8000);
+    ```
 
 ---
 
