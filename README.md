@@ -5,7 +5,7 @@
 # apcore-a2a
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Python Version](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/downloads/)
+[![Python Version](https://img.shields.io/badge/python-3.11%2B-blue)](https://www.python.org/downloads/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Node_18%2B-blue)](https://github.com/aipartnerup/apcore-a2a-typescript)
 
 **apcore-a2a** is an automatic [A2A (Agent-to-Agent)](https://google.github.io/A2A/) protocol adapter for the [apcore](https://github.com/aipartnerup/apcore-python) ecosystem. It allows you to expose any apcore Module Registry as a fully functional, standards-compliant A2A agent with zero manual effort.
@@ -33,7 +33,7 @@ By reading the existing apcore metadata—including `input_schema`, `output_sche
 ```bash
 pip install apcore-a2a
 ```
-Requires Python 3.10+ and apcore-python 0.6.0+.
+Requires Python 3.11+ and apcore 0.9.0+.
 
 **TypeScript**
 ```bash

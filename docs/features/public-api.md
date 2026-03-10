@@ -21,7 +21,25 @@ Top-level package entry point. Exposes `serve()` (blocking), `async_serve()` (re
 from apcore_a2a._serve import serve, async_serve
 from apcore_a2a.client import A2AClient
 
-__all__ = ["serve", "async_serve", "A2AClient"]
+__all__ = [
+    "serve",
+    "async_serve",
+    "A2AClient",
+    "__version__",
+    # Re-exported from submodules for convenience:
+    "Authenticator",
+    "JWTAuthenticator",
+    "ClaimMapping",
+    "AuthMiddleware",
+    "auth_identity_var",
+    "AgentCardBuilder",
+    "SkillMapper",
+    "SchemaConverter",
+    "ErrorMapper",
+    "PartConverter",
+    "A2AServerFactory",
+    "ApCoreAgentExecutor",
+]
 ```
 
 ---
@@ -56,7 +74,7 @@ def serve(
         registry_or_executor: apcore Registry or Executor object (duck-typed).
         host: Bind address. Default: "0.0.0.0".
         port: Bind port. Default: 8000.
-        name: Agent display name. Default: from registry config or "apcore-agent".
+        name: Agent display name. Default: from registry config or "Apcore Agent".
         description: Agent description. Default: from registry config.
         version: Semver version. Default: from registry config or "0.0.0".
         url: Public base URL for Agent Card. Default: f"http://{host}:{port}".
@@ -81,9 +99,10 @@ def serve(
 **Execution sequence:**
 
 1. **Resolve** `registry_or_executor`:
-   - Duck-type check: if object has `list()` and `get_definition()` → treat as Registry, wrap in Executor.
-   - If object has `call_async()` → treat as Executor; extract Registry via `executor.registry`.
-   - If neither → raise `TypeError("Expected apcore Registry or Executor")`.
+   - If `str` or `pathlib.Path` → treat as extensions directory path; auto-create Registry, discover modules, build Executor.
+   - Duck-type check: if object has `call_async()` → treat as Executor; extract Registry via `executor.registry`.
+   - If object has `list()` and `get_definition()` → treat as Registry.
+   - If neither → raise `TypeError("Expected apcore Registry, Executor, or path string")`.
 
 2. **Validate** Registry has ≥ 1 module:
    ```python
@@ -93,7 +112,7 @@ def serve(
    ```
 
 3. **Resolve metadata** (fall through chain):
-   - `name`: kwarg → `registry.config.get("project", {}).get("name")` → `"apcore-agent"`
+   - `name`: kwarg → `registry.config.get("project", {}).get("name")` → `"Apcore Agent"`
    - `version`: kwarg → `registry.config.get("project", {}).get("version")` → `"0.0.0"`
    - `description`: kwarg → `registry.config.get("project", {}).get("description")` → `f"apcore agent with {len(modules)} skills"`
    - `url`: kwarg → `f"http://{host}:{port}"`
@@ -228,7 +247,8 @@ app = await async_serve(registry, url="https://myagent.example.com")
 
 ```
 src/apcore_a2a/
-    __init__.py      # exports: serve, async_serve, A2AClient
+    __init__.py      # exports: serve, async_serve, A2AClient, __version__,
+                     #          + re-exports from auth, adapters, server submodules
     _serve.py        # serve(), async_serve() implementations
 ```
 

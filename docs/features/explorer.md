@@ -18,11 +18,12 @@ Browser-based interactive UI for exploring and testing an A2A agent. Mounted as 
 
 ```python
 def create_explorer_mount(
-    agent_card: dict,
+    agent_card: AgentCard | dict,
     router: object,  # duck-typed: DefaultRequestHandler or ExecutionRouter
     *,
     explorer_prefix: str = "/explorer",
     authenticator: object | None = None,
+    registry: object | None = None,    # optional: enriches agent card with input schemas
 ) -> Mount:
     """Create a Starlette Mount for the Explorer UI.
 
@@ -104,14 +105,23 @@ from starlette.routing import Mount, Route
 from starlette.responses import HTMLResponse
 from starlette.staticfiles import StaticFiles
 
-def create_explorer_mount(agent_card, router, *, explorer_prefix="/explorer", authenticator=None):
+def create_explorer_mount(agent_card, router, *, explorer_prefix="/explorer",
+                          authenticator=None, registry=None):
     html_path = Path(__file__).parent / "index.html"
 
     async def serve_index(request):
         return HTMLResponse(html_path.read_text())
 
     async def serve_agent_card(request):
-        return JSONResponse(agent_card)
+        # If agent_card is a Pydantic model, serialize to dict via model_dump()
+        card_data = agent_card.model_dump() if hasattr(agent_card, "model_dump") else agent_card
+        # If registry provided, enrich skills with _inputSchemas
+        if registry is not None:
+            for skill in card_data.get("skills", []):
+                defn = registry.get_definition(skill.get("id"))
+                if defn and getattr(defn, "input_schema", None):
+                    skill["_inputSchemas"] = defn.input_schema
+        return JSONResponse(card_data)
 
     return Mount(explorer_prefix, routes=[
         Route("/", endpoint=serve_index),

@@ -36,8 +36,8 @@ def main() -> None:
         help="Path to directory containing apcore module extensions",
     )
     serve_parser.add_argument(
-        "--host", default="0.0.0.0",
-        help="Bind host (default: 0.0.0.0)",
+        "--host", default="127.0.0.1",
+        help="Bind host (default: 127.0.0.1)",
     )
     serve_parser.add_argument(
         "--port", type=int, default=8000,
@@ -161,6 +161,15 @@ if args.auth_type == "bearer":
 **Step 4 — Resolve URL:**
 ```python
 url = args.url or f"http://{args.host}:{args.port}"
+```
+
+**Step 4b — Security warning:**
+```python
+if args.host == "0.0.0.0" and auth is None:
+    logger.warning(
+        "--host 0.0.0.0 binds to all network interfaces without authentication; "
+        "consider using --host 127.0.0.1 or enabling --auth-type bearer"
+    )
 ```
 
 **Step 5 — Call `serve()`:**

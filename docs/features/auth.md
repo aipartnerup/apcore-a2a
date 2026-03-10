@@ -145,7 +145,7 @@ class AuthMiddleware:
         3. Extract headers dict (lowercase keys) from scope["headers"].
         4. identity = authenticator.authenticate(headers).
         5. If identity is None and require_auth:
-           → send 401 with body {"error": "Authentication required"}
+           → send 401 with body {"error": "Unauthorized", "detail": "Missing or invalid Bearer token"}
              and header WWW-Authenticate: Bearer.
         6. Set auth_identity_var.set(identity) (token for ContextVar).
         7. Await downstream app.

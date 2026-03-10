@@ -291,28 +291,42 @@ def _error_response(id, code, message, data=None):
 {"status": "ok", "module_count": 5, "uptime_seconds": 3600}
 ```
 
+## Actual Implementation
+
+The `ExecutionRouter`, `TaskManager`, and `TransportManager` classes described above have been
+replaced by a2a-sdk components:
+
+- **`ApCoreAgentExecutor`** (`server/executor.py`): Implements `a2a.server.agent_execution.AgentExecutor`.
+  Bridges apcore's Executor to the a2a-sdk execution model. Extracts `skillId` from message metadata,
+  converts Parts to apcore input, calls `executor.call_async()` with timeout, and converts output
+  to Artifacts.
+- **`DefaultRequestHandler`** (from a2a-sdk): Handles task lifecycle, state machine, and JSON-RPC dispatch.
+- **`A2AStarletteApplication`** (from a2a-sdk): Provides Starlette routes and transport handling.
+
+The `A2AServerFactory` remains as the orchestrator that wires all components together, returning
+a `(Starlette app, AgentCard)` tuple (note: `AgentCard` is a Pydantic model, not a plain dict).
+
+Auth exempt paths include `{"/.well-known/agent.json", "/.well-known/agent-card.json", "/health", "/metrics"}`.
+
 ## File Structure
 
 ```
 src/apcore_a2a/server/
-    __init__.py         # exports: A2AServerFactory
-    factory.py          # A2AServerFactory
-    router.py           # ExecutionRouter
-    task_manager.py     # TaskManager, InvalidStateTransitionError
-    transport.py        # TransportManager
+    __init__.py         # exports: A2AServerFactory, ApCoreAgentExecutor
+    factory.py          # A2AServerFactory (orchestrates all components, health/metrics handlers)
+    executor.py         # ApCoreAgentExecutor (implements a2a-sdk AgentExecutor)
 ```
 
 ## Key Invariants
 
-- `ExecutionRouter` uses duck-typing for both Registry and Executor
-- `TaskManager` locks are per-task (not global) — concurrent tasks on different IDs proceed independently
-- All state transitions validated against `_TRANSITIONS` table — no illegal transitions possible
-- `TransportManager` routes to `StreamingHandler` for `message/stream` (separate component F-04)
+- `ApCoreAgentExecutor` uses duck-typing for both Registry and Executor
+- Task lifecycle and state machine are managed by a2a-sdk's `DefaultRequestHandler`
+- JSON-RPC dispatch and transport are handled by a2a-sdk's `A2AStarletteApplication`
 - JSON-RPC -32001 used for ACL denials to mask resource existence (security)
+- `A2AServerFactory.create()` returns `tuple[Starlette, AgentCard]` (Pydantic model)
 
 ## Test Modules
 
 - `tests/server/test_server_factory.py`
-- `tests/server/test_execution_router.py`
-- `tests/server/test_task_manager.py`
-- `tests/server/test_transport.py`
+- `tests/server/test_executor.py`
+- `tests/server/test_ops.py`

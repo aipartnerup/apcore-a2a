@@ -26,16 +26,29 @@ class AgentCardBuilder:
 
     def build(
         self,
-        registry: object,        # duck-typed: has list() + get_definition()
+        registry: Any,           # duck-typed: has list() + get_definition()
         *,
         name: str,
         description: str,
         version: str,
         url: str,
         capabilities: AgentCapabilities,
-        security_schemes: dict | None = None,
+        security_schemes: Any | None = None,
     ) -> AgentCard:
         """Returns a2a.types.AgentCard Pydantic model."""
+
+    def get_cached_or_build(
+        self,
+        registry: Any,
+        *,
+        name: str,
+        description: str,
+        version: str,
+        url: str,
+        capabilities: AgentCapabilities,
+        security_schemes: Any | None = None,
+    ) -> AgentCard:
+        """Return cached card if available, otherwise build a new one."""
 
     def build_extended(
         self,
@@ -64,7 +77,7 @@ class AgentCardBuilder:
      "skills": [...],
      "capabilities": {"streaming": bool, "pushNotifications": bool, "stateTransitionHistory": bool},
      "defaultInputModes": ["text/plain", "application/json"],
-     "defaultOutputModes": ["application/json"]
+     "defaultOutputModes": ["text/plain", "application/json"]
    }
    ```
 7. Cache in `self._cached_card`. Extended card in `self._cached_extended_card`.
@@ -101,7 +114,7 @@ class SkillMapper:
 | `examples[:10]` | `examples` | `title` → `name`, `inputs` → JSON string in TextPart |
 | computed | `inputModes` | See mode logic below |
 | computed | `outputModes` | See mode logic below |
-| `annotations` | `extensions.apcore.annotations` | All 5 boolean flags |
+| `annotations` | *(not mapped)* | `_build_extensions()` exists but `a2a.types.AgentSkill` has no `extensions` field; annotations are available via the Explorer UI's `_inputSchemas` enrichment instead |
 
 **Input/output mode logic:**
 
@@ -132,9 +145,9 @@ class SkillMapper:
 Converts apcore JSON Schemas for A2A DataPart usage. Reuses logic from apcore-mcp's SchemaConverter.
 
 ```python
-class SchemaConverter:
-    MAX_DEPTH = 32
+_MAX_REF_DEPTH = 32  # module-level constant
 
+class SchemaConverter:
     def convert_input_schema(self, descriptor: object) -> dict:
         """Convert input_schema: inline $refs, strip $defs, ensure root type=object."""
 
@@ -144,8 +157,15 @@ class SchemaConverter:
     def detect_root_type(self, schema: dict | None) -> str:
         """Return 'string', 'object', or 'unknown'."""
 
-    def _inline_refs(self, schema: dict, defs: dict, depth: int, visited: set) -> dict:
+    def _inline_refs(self, schema: Any, defs: dict[str, Any],
+                     _seen: set[str] | None = None, _depth: int = 0) -> Any:
         """Recursively resolve $ref. Raises ValueError on circular refs or depth > 32."""
+
+    def _resolve_ref(self, ref: str, defs: dict[str, Any]) -> dict:
+        """Resolve a single $ref string against $defs."""
+
+    def _ensure_object_type(self, schema: dict) -> dict:
+        """Ensure root schema has type: object."""
 ```
 
 **Conversion rules:**
@@ -165,33 +185,33 @@ Maps apcore exceptions to A2A JSON-RPC error dicts with security-aware sanitizat
 ```python
 class ErrorMapper:
     def to_jsonrpc_error(self, error: Exception) -> dict:
-        """Returns: {"code": int, "message": str, "data": dict | None}"""
+        """Returns: {"code": int, "message": str}"""
 
-    def _build_validation_data(self, error: Exception) -> dict:
-        """For SchemaValidationError: extract field-level detail."""
+    def _handle_apcore_error(self, error: Exception, error_code: str) -> dict:
+        """Handle apcore errors with a .code attribute (string matching)."""
 
     def _sanitize_message(self, message: str) -> str:
         """Strip paths, tracebacks. Truncate to 500 chars."""
 ```
 
+**Error dispatch:** Errors are matched by string `.code` attribute (e.g., `"MODULE_NOT_FOUND"`),
+not by exception class names.
+
 **Error map:**
 
-| apcore Exception | code | message | sanitized |
+| apcore `.code` | JSON-RPC code | message | sanitized |
 |---|---|---|---|
-| `ModuleNotFoundError` | -32601 | `"Skill not found: {module_id}"` | No |
-| `SchemaValidationError` | -32602 | `"Invalid params"` | No (field details in `data.errors`) |
-| `ACLDeniedError` | -32001 | `"Task not found"` | **Yes** (masks real type) |
-| `ModuleExecuteError` | -32603 | `"Internal error"` | Yes |
-| `ModuleTimeoutError` | -32603 | `"Execution timed out"` | Yes |
-| `InvalidInputError` | -32602 | `"Invalid input: {description}"` | No |
-| `CallDepthExceededError` | -32603 | `"Safety limit exceeded"` | Yes |
-| `CircularCallError` | -32603 | `"Safety limit exceeded"` | Yes |
-| `CallFrequencyExceededError` | -32603 | `"Safety limit exceeded"` | Yes |
-| `ApprovalPendingError` | N/A | Task transitions to `input_required` | N/A |
-| Any other `Exception` | -32603 | `"Internal error"` | Yes |
+| `MODULE_NOT_FOUND` | -32601 | sanitized original message | Yes |
+| `SCHEMA_VALIDATION_ERROR` | -32602 | sanitized original message | Yes |
+| `ACL_DENIED` | -32001 | `"Task not found"` | **Yes** (masks real type) |
+| `MODULE_TIMEOUT` / `EXECUTION_TIMEOUT` | -32603 | `"Execution timeout"` | No |
+| `INVALID_INPUT` | -32602 | `"Invalid input: {sanitized description}"` | Yes |
+| `CALL_DEPTH_EXCEEDED` / `CIRCULAR_CALL` / `CALL_FREQUENCY_EXCEEDED` | -32603 | `"Safety limit exceeded"` | No |
+| `asyncio.TimeoutError` | -32603 | `"Execution timeout"` | No |
+| Any other `Exception` | -32603 | `"Internal server error"` | No |
 
 **Sanitization rules:**
-1. Strip substrings matching file path pattern `r'/[^\s]+/[^\s]+'`.
+1. Strip substrings matching file path pattern `r'~?/[^\s]*'` (Unix paths and `~` paths).
 2. Strip traceback lines (`Traceback`, `File "`, `line \d+`).
 3. Truncate to 500 characters.
 4. Log full unsanitized exception at ERROR level with stack trace.
@@ -204,28 +224,31 @@ Bidirectional converter between A2A Parts and apcore module inputs/outputs.
 
 ```python
 class PartConverter:
-    def __init__(self, schema_converter: SchemaConverter) -> None: ...
+    def __init__(self, schema_converter: SchemaConverter | None = None) -> None:
+        """schema_converter defaults to SchemaConverter() if not provided."""
 
-    def parts_to_input(self, parts: list[dict], descriptor: object) -> dict | str:
+    def parts_to_input(self, parts: list[Part], descriptor: Any) -> dict | str:
         """Convert A2A message Parts to apcore module input.
 
         Rules:
         1. Empty parts → raise ValueError("Message must contain at least one Part")
-        2. First DataPart(mediaType="application/json") → return data dict
-        3. TextPart + input_schema root type 'string' → return text string
-        4. TextPart + input_schema root type 'object' → JSON.parse(text)
-           - parse failure → raise ValueError("Invalid JSON in TextPart")
-        5. FilePart → return {"uri": ..., "name": ..., "mimeType": ...}
+        2. Multiple parts → raise ValueError("Multiple parts are not supported; expected exactly one Part")
+        3. DataPart → return data dict
+        4. TextPart + input_schema root type 'string' → return text string
+        5. TextPart + input_schema root type 'object' → JSON.parse(text)
+           - parse failure → raise ValueError("TextPart text is not valid JSON: {error}")
+        6. FilePart → raise ValueError("FilePart is not supported")
         """
 
-    def output_to_parts(self, output: object) -> a2a.types.Artifact:
+    def output_to_parts(self, output: Any, task_id: str = "") -> Artifact:
         """Convert apcore module output to an a2a.types.Artifact Pydantic model.
 
         Rules:
-        1. None → []
-        2. dict → [DataPart(data=output, mediaType="application/json")]
-        3. str → [TextPart(text=output)]
-        4. bytes → [FilePart(bytes=base64(output), mimeType=detected)]
+        1. None → Artifact(artifact_id=..., parts=[])
+        2. dict → Artifact with [DataPart(data=output)]
+        3. str → Artifact with [TextPart(text=output)]
+        4. list → Artifact with [TextPart(text=json.dumps(output))]
+        5. Other → Artifact with [TextPart(text=str(output))]
         """
 ```
 

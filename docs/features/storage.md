@@ -133,23 +133,36 @@ All tasks stored as plain Python dicts (JSON-serializable):
 }
 ```
 
+## Actual Implementation
+
+The storage module delegates entirely to the `a2a-sdk` library. The `storage/__init__.py` re-exports
+`TaskStore` and `InMemoryTaskStore` from `a2a.server.tasks`:
+
+```python
+# src/apcore_a2a/storage/__init__.py
+from a2a.server.tasks import TaskStore, InMemoryTaskStore
+
+__all__ = ["TaskStore", "InMemoryTaskStore"]
+```
+
+The a2a-sdk `TaskStore` interface exposes `save`, `get`, and `delete` only. Push notification config
+and context storage are handled internally by the SDK. The custom `protocol.py`, `memory.py`, `list()`
+with cursor pagination, and `max_tasks` capacity limiting described above are **not implemented** —
+they reflect the original design intent before the a2a-sdk provided these components.
+
 ## File Structure
 
 ```
 src/apcore_a2a/storage/
-    __init__.py     # exports: TaskStore, InMemoryTaskStore
-    protocol.py     # TaskStore Protocol
-    memory.py       # InMemoryTaskStore
+    __init__.py     # re-exports: TaskStore, InMemoryTaskStore from a2a-sdk
 ```
 
 ## Key Invariants
 
-- `TaskStore` is a `runtime_checkable` Protocol — custom implementations checked at startup
-- `InMemoryTaskStore` is thread-safe via `asyncio.Lock`
-- `save()` is idempotent for existing tasks (overwrites by ID)
-- `list()` result order is stable (insertion order)
-- `max_tasks` prevents memory exhaustion
+- `TaskStore` protocol methods: `save`, `get`, `delete` (provided by a2a-sdk)
+- `InMemoryTaskStore` is the default when no task_store is provided to `serve()`
+- Push notification config is managed internally by a2a-sdk's `DefaultRequestHandler`
 
 ## Test Module
 
-`tests/storage/test_in_memory_task_store.py`
+Storage is tested indirectly through server integration tests.

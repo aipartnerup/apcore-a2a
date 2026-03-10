@@ -35,7 +35,7 @@ async def handle_health(self, request: Request) -> JSONResponse:
     return JSONResponse({
         "status": "healthy",
         "module_count": len(self._registry.list()),
-        "uptime_seconds": int(uptime),
+        "uptime_seconds": uptime,  # float (seconds since start)
         "version": self._version,
     })
 ```
@@ -45,7 +45,7 @@ HTTP 200:
 {
   "status": "healthy",
   "module_count": 5,
-  "uptime_seconds": 3600,
+  "uptime_seconds": 3600.5,
   "version": "1.0.0"
 }
 ```
@@ -106,28 +106,25 @@ HTTP 404 (when `metrics=False`, the default):
 
 ### Counter Implementation
 
-Task state counters are maintained in `TransportManager` via callback from `TaskManager`:
+Task state counters are maintained in a `_MetricsState` dataclass within `server/factory.py`, updated via `on_state_change` callback from `ApCoreAgentExecutor`:
 
 ```python
-class TransportManager:
-    def __init__(self, ...) -> None:
-        self._counters = {
-            "active": 0,
-            "completed": 0,
-            "failed": 0,
-            "canceled": 0,
-            "requests": 0,
-        }
-        self._started_at = time.monotonic()
+@dataclass
+class _MetricsState:
+    active: int = 0
+    completed: int = 0
+    failed: int = 0
+    canceled: int = 0
+    input_required: int = 0
+    started_at: float = field(default_factory=time.monotonic)
 ```
 
-`TaskManager` increments counters on `transition()` callbacks:
+State change callbacks update counters:
 - `→ working` : `active += 1`
 - `→ completed`: `active -= 1`, `completed += 1`
 - `→ failed`   : `active -= 1`, `failed += 1`
 - `→ canceled` : `active -= 1`, `canceled += 1`
-
-`TransportManager.handle_jsonrpc()` increments `requests` on each valid JSON-RPC call.
+- `→ input_required`: `input_required += 1`
 
 ### `serve()` kwarg
 
@@ -177,18 +174,12 @@ def invalidate_cache(self) -> None:
 
 After invalidation, the next `GET /.well-known/agent.json` call triggers a full rebuild from the registry.
 
-### Transport Hot-Swap
+### Agent Card Hot-Swap
 
-The `TransportManager` holds a reference to the agent card dict:
-```python
-class TransportManager:
-    def update_agent_card(self, agent_card: dict) -> None:
-        """Replace agent card. Thread-safe for async event loop."""
-        self._agent_card = agent_card
-        self._extended_card = None  # Reset extended card too
-```
-
-Since this is an async event loop context (single-threaded), the dict replacement is atomic.
+Agent Card updates are handled via `AgentCardBuilder.invalidate_cache()` combined with a
+`card_modifier` callback passed to `A2AStarletteApplication`. The a2a-sdk lazily rebuilds
+the card on the next request after cache invalidation. There is no `TransportManager` —
+transport is handled by a2a-sdk's `A2AStarletteApplication`.
 
 ---
 

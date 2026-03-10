@@ -18,7 +18,7 @@ You need an existing apcore project with at least one module defined:
     pip install apcore-a2a
     ```
 
-    Requires Python 3.10+ and `apcore-python` 0.6.0+.
+    Requires Python 3.11+ and `apcore` 0.9.0+.
 
 === "TypeScript"
 
@@ -344,9 +344,9 @@ Get the underlying app object and mount it into your existing web framework.
 
 | Option | Python | TypeScript | Default | Description |
 |--------|--------|------------|---------|-------------|
-| Host | `host` | `host` | `"0.0.0.0"` | Bind address |
+| Host | `host` | `host` | `"0.0.0.0"` (CLI: `"127.0.0.1"`) | Bind address |
 | Port | `port` | `port` | `8000` | Bind port |
-| Name | `name` | `name` | From registry | Agent display name |
+| Name | `name` | `name` | From registry or `"Apcore Agent"` | Agent display name |
 | Description | `description` | `description` | From registry | Agent description |
 | Version | `version` | `version` | From registry | Semver version |
 | URL | `url` | `url` | `http://{host}:{port}` | Public base URL |
