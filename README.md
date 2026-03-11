@@ -10,9 +10,14 @@
 
 **apcore-a2a** is an automatic [A2A (Agent-to-Agent)](https://google.github.io/A2A/) protocol adapter for the [apcore](https://github.com/aipartnerup/apcore-python) ecosystem. It allows you to expose any apcore Module Registry as a fully functional, standards-compliant A2A agent with zero manual effort.
 
-By reading the existing apcore metadata—including `input_schema`, `output_schema`, descriptions, and behavioral annotations—apcore-a2a eliminates the need to hand-write Agent Cards, JSON-RPC endpoints, and task lifecycle logic.
+### 🚀 Official SDKs
+
+- **Python SDK**: [aipartnerup/apcore-a2a-python](https://github.com/aipartnerup/apcore-a2a-python)
+- **TypeScript SDK**: [aipartnerup/apcore-a2a-typescript](https://github.com/aipartnerup/apcore-a2a-typescript)
 
 ---
+
+By reading the existing apcore metadata—including `input_schema`, `output_schema`, descriptions, and behavioral annotations—apcore-a2a eliminates the need to hand-write Agent Cards, JSON-RPC endpoints, and task lifecycle logic.
 
 ## Key Features
 
@@ -29,17 +34,17 @@ By reading the existing apcore metadata—including `input_schema`, `output_sche
 
 ## Installation
 
-**Python**
-```bash
-pip install apcore-a2a
-```
-Requires Python 3.11+ and apcore 0.9.0+.
+=== "Python"
+    ```bash
+    pip install apcore-a2a
+    ```
+    *Requires Python 3.11+ and apcore 0.9.0+.*
 
-**TypeScript**
-```bash
-npm install apcore-a2a
-```
-Requires Node.js 18+ and apcore-js 0.8.0+.
+=== "TypeScript"
+    ```bash
+    npm install apcore-a2a
+    ```
+    *Requires Node.js 18+ and apcore-js 0.8.0+.*
 
 ---
 
@@ -49,45 +54,78 @@ Requires Node.js 18+ and apcore-js 0.8.0+.
 
 If you already have apcore modules, you can expose them as an A2A agent in just a few lines:
 
-```python
-from apcore import Registry
-from apcore_a2a import serve
+=== "Python"
+    ```python
+    from apcore import Registry
+    from apcore_a2a import serve
 
-# 1. Initialize your registry and discover modules
-registry = Registry(extensions_dir="./extensions")
-registry.discover()
+    # 1. Initialize your registry and discover modules
+    registry = Registry(extensions_dir="./extensions")
+    registry.discover()
 
-# 2. Start the A2A server
-serve(registry, name="My Assistant Agent", host="0.0.0.0", port=8000)
-```
+    # 2. Start the A2A server
+    serve(registry, name="My Assistant Agent", host="0.0.0.0", port=8000)
+    ```
 
-Your agent is now discoverable at `http://localhost:8000/.well-known/agent.json` (Python) or `/.well-known/agent-card.json` (TypeScript).
+=== "TypeScript"
+    ```typescript
+    import { Registry } from "apcore-js";
+    import { serve } from "apcore-a2a";
+
+    const registry = new Registry({ extensionsDir: "./extensions" });
+    await registry.discover();
+
+    serve(registry, {
+      name: "My Assistant Agent",
+      port: 8000,
+    });
+    ```
 
 ### 2. Call a remote A2A Agent
 
 Use the `A2AClient` to interact with any A2A-compliant agent:
 
-```python
-import asyncio
-from apcore_a2a import A2AClient
+=== "Python"
+    ```python
+    import asyncio
+    from apcore_a2a import A2AClient
 
-async def main():
-    async with A2AClient("http://remote-agent:8000") as client:
-        # Discover skills
-        card = await client.discover()
-        print(f"Connected to {card['name']} with {len(card['skills'])} skills")
+    async def main():
+        async with A2AClient("http://remote-agent:8000") as client:
+            # Discover skills
+            card = await client.discover()
+            print(f"Connected to {card['name']} with {len(card['skills'])} skills")
 
-        # Send a message
-        task = await client.send_message({
-            "role": "user",
-            "parts": [{"type": "text", "text": "Hello, how can you help?"}]
-        }, metadata={"skillId": "general.chat"})
-        
-        print(f"Task status: {task['status']['state']}")
+            # Send a message
+            task = await client.send_message({
+                "role": "user",
+                "parts": [{"type": "text", "text": "Hello, how can you help?"}]
+            }, metadata={"skillId": "general.chat"})
+            
+            print(f"Task status: {task['status']['state']}")
 
-if __name__ == "__main__":
-    asyncio.run(main())
-```
+    if __name__ == "__main__":
+        asyncio.run(main())
+    ```
+
+=== "TypeScript"
+    ```typescript
+    import { A2AClient } from "apcore-a2a";
+
+    const client = new A2AClient("http://remote-agent:8000");
+
+    // Discover skills
+    const card = await client.discover();
+    console.log(`Connected to ${card.name}`);
+
+    // Send a message
+    const task = await client.sendMessage(
+      { role: "user", parts: [{ type: "text", text: "Hello, how can you help?" }] },
+      { metadata: { skillId: "general.chat" } }
+    );
+    
+    console.log(`Task status: ${task.status.state}`);
+    ```
 
 ---
 
@@ -107,12 +145,10 @@ apcore-a2a acts as a thin, protocol-specific layer on top of `apcore-python`. It
 
 ## Documentation
 
-- **[Getting Started Guide](docs/getting-started.md)** — Install, serve, and call agents (Python & TypeScript)
+- **[Full Documentation Site](https://aipartnerup.github.io/apcore-a2a/)**
+- **[Getting Started Guide](docs/getting-started.md)** — Install, serve, and call agents
 - [Feature Specs Overview](docs/features/overview.md) — All feature specifications
-- [Product Requirements (PRD)](docs/prd.md)
-- [Technical Design (TDD)](docs/tech-design.md)
-- [Software Requirements (SRS)](docs/srs.md)
-- [Test Plan](docs/test-plan.md)
+- [Specifications (PRD, TDD, SRS)](docs/spec/)
 
 ---
 

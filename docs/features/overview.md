@@ -32,8 +32,8 @@ client ────────────────────────�
 
 ## Related Documents
 
-- [Getting Started](../getting-started.md) — Installation & usage guide (Python & TypeScript)
-- [PRD](../prd.md) — Product Requirements Document
-- [SRS](../srs.md) — Software Requirements Specification
-- [Tech Design](../tech-design.md) — Technical Design Document
-- [Test Plan](../test-plan.md) — Test Plan
+- [Getting Started](../getting-started.md) — Installation & usage guide
+- [Product Requirements (PRD)](../spec/prd.md)
+- [Technical Design](../spec/tech-design.md)
+- [Software Requirements (SRS)](../spec/srs.md)
+- [Test Plan](../spec/test-plan.md)

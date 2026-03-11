@@ -366,5 +366,5 @@ Get the underlying app object and mount it into your existing web framework.
 - **Push Notifications**: Enable `push_notifications=True` for webhook-based async task updates
 - **Multi-Agent Workflows**: Use `A2AClient` to orchestrate multiple agents in complex pipelines
 - **Custom Storage**: Implement the `TaskStore` protocol for Redis/PostgreSQL persistence
-- **Detailed Design**: See the [Tech Design](tech-design.md) for architecture deep-dive
-- **Feature Specs**: See [docs/features/](features/overview.md) for implementation details
+- **Detailed Design**: See the [Technical Design](spec/tech-design.md) for an architecture deep-dive.
+- **Feature Specs**: See the [Feature Specs Overview](features/overview.md) for implementation details.

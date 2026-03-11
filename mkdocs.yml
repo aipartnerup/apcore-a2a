@@ -29,11 +29,6 @@ nav:
   - Home: index.md
   - Getting Started: getting-started.md
   - Changelog: changelog.md
-  - Specifications:
-      - Product Requirements (PRD): prd.md
-      - Technical Design: tech-design.md
-      - Software Requirements (SRS): srs.md
-      - Test Plan: test-plan.md
   - Features:
       - Overview: features/overview.md
       - Adapters: features/adapters.md
@@ -47,6 +42,11 @@ nav:
       - CLI: features/cli.md
       - Explorer: features/explorer.md
       - Ops: features/ops.md
+  - Specifications:
+      - Product Requirements (PRD): spec/prd.md
+      - Technical Design: spec/tech-design.md
+      - Software Requirements (SRS): spec/srs.md
+      - Test Plan: spec/test-plan.md
 
 markdown_extensions:
   - tables
