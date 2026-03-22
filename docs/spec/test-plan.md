@@ -7,7 +7,7 @@
 | Document ID | TP-APCORE-A2A-001                                                     |
 | Version     | 1.0                                                                   |
 | Date        | 2026-03-03                                                            |
-| Author      | aipartnerup Engineering Team                                          |
+| Author      | aiperceivable Engineering Team                                          |
 | Status      | Draft                                                                 |
 | SRS Ref     | `docs/apcore-a2a/srs.md` v1.0 (SRS-APCORE-A2A-001)                  |
 | Tech Design | `docs/apcore-a2a/tech-design.md` v1.0 (TDD-APCORE-A2A-001)          |
@@ -19,7 +19,7 @@
 
 | Version | Date       | Author                       | Description   |
 |---------|------------|------------------------------|---------------|
-| 1.0     | 2026-03-03 | aipartnerup Engineering Team | Initial draft |
+| 1.0     | 2026-03-03 | aiperceivable Engineering Team | Initial draft |
 
 ---
 

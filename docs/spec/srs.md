@@ -7,7 +7,7 @@
 | Document ID | SRS-APCORE-A2A-001                                                       |
 | Version     | 1.0                                                                      |
 | Date        | 2026-03-03                                                               |
-| Author      | aipartnerup Engineering Team                                             |
+| Author      | aiperceivable Engineering Team                                             |
 | Status      | Draft                                                                    |
 | PRD Ref     | `docs/prd.md` v1.0                                                      |
 | Standard    | IEEE 830 / ISO/IEC/IEEE 29148                                            |
@@ -18,7 +18,7 @@
 
 | Version | Date       | Author                      | Description         |
 |---------|------------|------------------------------|---------------------|
-| 1.0     | 2026-03-03 | aipartnerup Engineering Team | Initial draft       |
+| 1.0     | 2026-03-03 | aiperceivable Engineering Team | Initial draft       |
 
 ---
 

@@ -5,8 +5,8 @@ This guide walks you through installing **apcore-a2a**, serving your first A2A a
 ## Prerequisites
 
 You need an existing apcore project with at least one module defined:
-- **Python**: [apcore-python](https://github.com/aipartnerup/apcore-python) — see the [Getting Started guide](https://aipartnerup.github.io/apcore/getting-started.html)
-- **TypeScript**: [apcore-js](https://github.com/aipartnerup/apcore-typescript)
+- **Python**: [apcore-python](https://github.com/aiperceivable/apcore-python) — see the [Getting Started guide](https://aiperceivable.github.io/apcore/getting-started.html)
+- **TypeScript**: [apcore-js](https://github.com/aiperceivable/apcore-typescript)
 
 ---
 

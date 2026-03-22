@@ -5,7 +5,7 @@
 | **Title**        | apcore-a2a: Automatic A2A Protocol Adapter for apcore Module Registry  |
 | **Version**      | 1.0                                                                    |
 | **Date**         | 2026-03-03                                                             |
-| **Author**       | aipartnerup Product Team                                               |
+| **Author**       | aiperceivable Product Team                                               |
 | **Status**       | Draft                                                                  |
 | **Reviewers**    | apcore Core Maintainers, apcore-mcp Maintainers, Community Contributors |
 | **Stakeholders** | apcore Core Team, A2A SDK Maintainers, xxx-apcore Project Developers, Enterprise Integration Partners |

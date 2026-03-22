@@ -6,16 +6,16 @@
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Python Version](https://img.shields.io/badge/python-3.11%2B-blue)](https://www.python.org/downloads/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-Node_18%2B-blue)](https://github.com/aipartnerup/apcore-a2a-typescript)
+[![TypeScript](https://img.shields.io/badge/TypeScript-Node_18%2B-blue)](https://github.com/aiperceivable/apcore-a2a-typescript)
 
 > **Build once, invoke by Code or AI.**
 
-**apcore-a2a** is an automatic [A2A (Agent-to-Agent)](https://google.github.io/A2A/) protocol adapter for the [apcore](https://github.com/aipartnerup/apcore) ecosystem. It allows you to expose any apcore Module Registry as a fully functional, standards-compliant A2A agent with zero manual effort.
+**apcore-a2a** is an automatic [A2A (Agent-to-Agent)](https://google.github.io/A2A/) protocol adapter for the [apcore](https://github.com/aiperceivable/apcore) ecosystem. It allows you to expose any apcore Module Registry as a fully functional, standards-compliant A2A agent with zero manual effort.
 
 ### 🚀 Official SDKs
 
-- **Python SDK**: [aipartnerup/apcore-a2a-python](https://github.com/aipartnerup/apcore-a2a-python)
-- **TypeScript SDK**: [aipartnerup/apcore-a2a-typescript](https://github.com/aipartnerup/apcore-a2a-typescript)
+- **Python SDK**: [aiperceivable/apcore-a2a-python](https://github.com/aiperceivable/apcore-a2a-python)
+- **TypeScript SDK**: [aiperceivable/apcore-a2a-typescript](https://github.com/aiperceivable/apcore-a2a-typescript)
 
 ---
 
@@ -149,7 +149,7 @@ apcore-a2a acts as a thin, protocol-specific layer on top of `apcore-python`. It
 
 ## Documentation
 
-- **[Full Documentation Site](https://aipartnerup.github.io/apcore-a2a/)**
+- **[Full Documentation Site](https://aiperceivable.github.io/apcore-a2a/)**
 - **[Getting Started Guide](docs/getting-started.md)** — Install, serve, and call agents
 - [Feature Specs Overview](docs/features/overview.md) — All feature specifications
 - [Specifications (PRD, TDD, SRS)](docs/spec/)
