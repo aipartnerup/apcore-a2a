@@ -100,21 +100,20 @@ class SkillMapper:
     def _compute_input_modes(self, descriptor: object) -> list[str]: ...
     def _compute_output_modes(self, descriptor: object) -> list[str]: ...
     def _build_examples(self, descriptor: object) -> list[str]: ...  # max 10, title strings only
-    def _build_extensions(self, annotations: object | None) -> dict | None: ...
+    # Note: _build_extensions() was removed — AgentSkill has no `extensions` field in a2a-sdk
 ```
 
 **Field mapping:**
 
 | apcore field | A2A Skill field | Notes |
 |---|---|---|
-| `module_id` | `id` | Verbatim |
-| humanize(`module_id`) | `name` | Dots/underscores → spaces, title case |
-| `description` | `description` | Verbatim. Empty/None → return `None` |
-| `tags` | `tags` | Verbatim |
+| `metadata["display"]["a2a"]["alias"]` or `metadata["display"]["alias"]` or `module_id` | `id` | Display overlay alias takes priority |
+| `metadata["display"]["a2a"]["description"]` or `metadata["display"]["description"]` or `description` | `description` | Display overlay description takes priority. Empty/None → return `None` |
+| `metadata["display"]["tags"]` or `tags` | `tags` | Display overlay tags take priority |
 | `examples[:10]` | `examples` | `title` → `name`, `inputs` → JSON string in TextPart |
 | computed | `inputModes` | See mode logic below |
 | computed | `outputModes` | See mode logic below |
-| `annotations` | *(not mapped)* | `_build_extensions()` exists but `a2a.types.AgentSkill` has no `extensions` field; annotations are available via the Explorer UI's `_inputSchemas` enrichment instead |
+| `annotations` | *(not mapped)* | See note below |
 
 **Input/output mode logic:**
 
@@ -126,17 +125,7 @@ class SkillMapper:
 | `output_schema` defined | | `["application/json"]` |
 | No `output_schema` | | `["text/plain"]` |
 
-**Extensions structure (when annotations is not None):**
-```json
-{
-  "apcore": {
-    "annotations": {
-      "readonly": false, "destructive": false, "idempotent": false,
-      "requires_approval": false, "open_world": true
-    }
-  }
-}
-```
+**Note on annotations:** `_build_extensions()` has been removed. `a2a.types.AgentSkill` has no `extensions` field in the A2A SDK; apcore annotations are available via the Explorer UI's `_inputSchemas` enrichment instead.
 
 ---
 

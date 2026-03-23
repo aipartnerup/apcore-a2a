@@ -5,6 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-03-23
+
+### Added
+
+- **Display overlay in `SkillMapper`** (§5.13) — `to_skill()` reads `metadata["display"]["a2a"]` for skill id, description, and tags when present.
+  - Skill id: `metadata["display"]["a2a"]["alias"]` → `metadata["display"]["alias"]` → `module_id`.
+  - Description: `metadata["display"]["a2a"]["description"]` → `metadata["display"]["description"]` → `module.description`.
+  - Tags: `metadata["display"]["tags"]` → `module.tags`.
+- Updated feature spec: `docs/features/adapters.md` — SkillMapper field mapping table updated, `_build_extensions` noted as removed.
+
+### Removed
+
+- **`_build_extensions()` dead code** — `AgentSkill` has no `extensions` field in the A2A SDK; this method could never be wired in. Deleted along with its 3 tests.
+
+### Changed
+
+- Dependency bump: requires `apcore-toolkit >= 0.4.0` for `DisplayResolver`.
+
+### Tests
+
+- `TestSkillMapperDisplayOverlay` (6 tests): A2A alias used as skill id, A2A description used, tags from display overlay, surface-specific override wins, fallback to scanner values when no overlay.
+- Removed 3 `test__build_extensions_*` tests (dead code).
+
+---
+
 ## [0.2.1] - 2026-03-22
 
 ### Changed
