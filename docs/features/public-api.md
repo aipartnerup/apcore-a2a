@@ -86,7 +86,7 @@ def serve(
         explorer_prefix: URL prefix for Explorer. Default: "/explorer".
         cancel_on_disconnect: Deprecated. Has no effect; DefaultRequestHandler does not support disabling cancel-on-disconnect. Default: True.
         shutdown_timeout: Seconds to wait for graceful shutdown. Default: 30.
-        execution_timeout: Seconds before task execution times out. Can also be set via A2A_EXECUTION_TIMEOUT environment variable. Default: 300.
+        execution_timeout: Seconds before task execution times out. Can also be set via APCORE_A2A_EXECUTION_TIMEOUT environment variable. Default: 300.
         metrics: Enable GET /metrics endpoint. Default: False.
         log_level: Logging level ("debug","info","warning","error"). Default: "info".
 

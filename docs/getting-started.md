@@ -74,7 +74,7 @@ Your agent is now running. Verify by visiting:
 === "TypeScript"
 
     ```
-    http://localhost:8000/.well-known/agent-card.json
+    http://localhost:8000/.well-known/agent.json
     ```
 
 This returns the auto-generated **Agent Card** — a JSON document describing your agent's name, skills, and capabilities, all derived from your apcore module metadata.

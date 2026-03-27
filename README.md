@@ -40,13 +40,13 @@ By reading the existing apcore metadata—including `input_schema`, `output_sche
     ```bash
     pip install apcore-a2a
     ```
-    *Requires Python 3.11+ and apcore 0.9.0+.*
+    *Requires Python 3.11+ and apcore 0.14.0+.*
 
 === "TypeScript"
     ```bash
     npm install apcore-a2a
     ```
-    *Requires Node.js 18+ and apcore-js 0.8.0+.*
+    *Requires Node.js 18+ and apcore-js 0.14.0+.*
 
 ---
 
@@ -138,9 +138,10 @@ apcore-a2a acts as a thin, protocol-specific layer on top of `apcore-python`. It
 | A2A Concept | apcore Mapping |
 |-------------|----------------|
 | **Agent Card** | Derived from Registry configuration |
-| **Skill** | Maps 1:1 to an apcore Module |
-| **Skill.tags** | `module.tags` |
-| **Skill metadata** | `annotations` (cacheable, paginated) + `metadata` (x-preconditions, x-cost-per-call, x-output-source) |
+| **Skill id** | `module_id` |
+| **Skill name** | `metadata["display"]["a2a"]["alias"]` or humanized `module_id` |
+| **Skill desc** | `metadata["display"]["a2a"]["description"]` or `module.description` |
+| **Skill tags** | `metadata["display"]["tags"]` or `module.tags` |
 | **Task** | Managed execution of `Executor.call_async()` |
 | **Streaming** | Wrapped `Executor.stream()` via SSE |
 | **Security** | Bridged to apcore's `Identity` context |

@@ -5,24 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.3.0] - 2026-03-23
+## [0.3.0] - 2026-03-27
 
 ### Added
 
-- **Display overlay in `SkillMapper`** (§5.13) — `to_skill()` reads `metadata["display"]["a2a"]` for skill id, description, and tags when present.
-  - Skill id: `metadata["display"]["a2a"]["alias"]` → `metadata["display"]["alias"]` → `module_id`.
-  - Description: `metadata["display"]["a2a"]["description"]` → `metadata["display"]["description"]` → `module.description`.
-  - Tags: `metadata["display"]["tags"]` → `module.tags`.
-- Updated feature spec: `docs/features/adapters.md` — SkillMapper field mapping table updated, `_build_extensions` noted as removed.
+- **Display overlay in `SkillMapper`** (§5.13) — both Python and TypeScript SDKs now read `metadata["display"]["a2a"]` for skill name, description, tags, and guidance.
+  - Skill name: `a2a.alias` → `display.alias` → humanized `module_id`.
+  - Description: `a2a.description` → `display.description` → `module.description`. Guidance appended if present.
+  - Tags: `display.tags` → `module.tags`.
+
+### Changed
+
+- **Cross-language sync** — aligned Python and TypeScript SDKs on endpoint, env vars, CLI interface, and documentation.
+- **Well-known endpoint** unified to `/.well-known/agent.json` across both SDKs (TypeScript was using `agent-card.json`).
+- **Environment variables** renamed with `APCORE_` prefix: `JWT_SECRET` → `APCORE_JWT_SECRET`, `A2A_EXECUTION_TIMEOUT` → `APCORE_A2A_EXECUTION_TIMEOUT`.
+- **CLI `--execution-timeout`** now accepts seconds in both SDKs (TypeScript was using milliseconds).
+- **`apcore` dependency** bumped from `0.9.0+` to `0.14.0+` in both SDKs.
+- Updated feature spec `docs/features/adapters.md` — SkillMapper field mapping table corrected (`id`→`module_id`, `name`→alias chain).
 
 ### Removed
 
-- **`_build_extensions()` dead code** — `AgentSkill` has no `extensions` field in the A2A SDK; this method could never be wired in. Deleted along with its 3 tests.
-
-### Tests
-
-- `TestSkillMapperDisplayOverlay` (6 tests): A2A alias used as skill id, A2A description used, tags from display overlay, surface-specific override wins, fallback to scanner values when no overlay.
-- Removed 3 `test__build_extensions_*` tests (dead code).
+- **`_build_extensions()` dead code** (Python) — `AgentSkill` has no `extensions` field in the A2A SDK; deleted along with 3 tests.
 
 ---
 

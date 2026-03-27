@@ -107,8 +107,9 @@ class SkillMapper:
 
 | apcore field | A2A Skill field | Notes |
 |---|---|---|
-| `metadata["display"]["a2a"]["alias"]` or `metadata["display"]["alias"]` or `module_id` | `id` | Display overlay alias takes priority |
-| `metadata["display"]["a2a"]["description"]` or `metadata["display"]["description"]` or `description` | `description` | Display overlay description takes priority. Empty/None → return `None` |
+| `module_id` | `id` | Always uses module_id |
+| `metadata["display"]["a2a"]["alias"]` or `metadata["display"]["alias"]` or humanized `module_id` | `name` | Display overlay alias takes priority |
+| `metadata["display"]["a2a"]["description"]` or `metadata["display"]["description"]` or `description` | `description` | Display overlay description takes priority. Guidance appended if present. Empty/None → return `None` |
 | `metadata["display"]["tags"]` or `tags` | `tags` | Display overlay tags take priority |
 | `examples[:10]` | `examples` | `title` → `name`, `inputs` → JSON string in TextPart |
 | computed | `inputModes` | See mode logic below |
