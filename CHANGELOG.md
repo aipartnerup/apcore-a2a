@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2026-03-31
+
+### Added
+
+- **Rust implementation** (`apcore-a2a-rust`) — initial scaffold at v0.3.0 with adapters (ErrorMapper, AgentCardBuilder, SkillMapper, SchemaConverter, PartConverter), auth (JWT, middleware), server (factory, executor), client (A2AClient, AgentCardFetcher), storage (TaskStore), CLI, and builder pattern. Built on axum 0.8 with `apcore = "0.15"`.
+- **Error Formatter Registry** (§8.8) — Python and TypeScript SDKs register their `ErrorMapper` with `ErrorFormatterRegistry.register("a2a", ...)` so the ecosystem has a discoverable A2A error formatter.
+- **Config Bus namespace** (§9.13) — all three SDKs register the `apcore-a2a` namespace with env prefix `APCORE_A2A` and defaults for `execution_timeout`, `cors_origins`, `explorer`, `metrics`, `push_notifications`.
+- **New error codes** — `MODULE_DISABLED`, `CONFIG_NAMESPACE_DUPLICATE`, `CONFIG_MOUNT_ERROR`, `CONFIG_BIND_ERROR` handled in ErrorMapper across all languages.
+
+### Changed
+
+- **`apcore` dependency** bumped from `0.14.0+` to `0.15.1+` in Python and TypeScript SDKs.
+- **Env prefix simplified** — `APCORE__A2A` (double underscore) → `APCORE_A2A` (single underscore), per apcore 0.15.1 convention change.
+
+---
+
 ## [0.3.0] - 2026-03-27
 
 ### Added
