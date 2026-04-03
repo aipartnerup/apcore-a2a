@@ -19,6 +19,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`apcore` dependency** bumped from `0.14.0+` to `0.15.1+` in Python and TypeScript SDKs.
 - **Env prefix simplified** — `APCORE__A2A` (double underscore) → `APCORE_A2A` (single underscore), per apcore 0.15.1 convention change.
 
+### Fixed (Cross-Language Sync)
+
+- **TypeScript top-level exports** — `index.ts` now exports all 16 symbols specified in F-08 (was 6). Added `VERSION`, `createAuthMiddleware`, `authIdentityStore`, `getAuthIdentity`, `AgentCardBuilder`, `SkillMapper`, `SchemaConverter`, `ErrorMapper`, `PartConverter`, `A2AServerFactory`, `ApCoreAgentExecutor`.
+- **TypeScript `pushNotifications` parameter** — added to `A2AServerCreateOptions` and wired into capabilities.
+- **TypeScript `A2AClient.agentCard`** getter — equivalent to Python's `agent_card` async property.
+- **TypeScript `ErrorMapper.sanitizeMessage`** — changed from public to private, matching Python and spec.
+
 ---
 
 ## [0.3.0] - 2026-03-27
